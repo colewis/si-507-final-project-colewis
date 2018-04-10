@@ -8,15 +8,6 @@ from bs4 import BeautifulSoup
 # import plotly.plotly as py
 # import pandas as pd
 
-DBNAME = 'good_boys.db'
-baseurl = 'http://www.akc.org/dog-breeds/'
-
-crawl_list = []
-for x in range(1,23):
-    crawlurl = 'page/' + str(x) + '/'
-    crawl_list.append(baseurl + crawlurl)
-
-
 CACHE_FNAME = 'cache.json'
 try:
     cache_file = open(CACHE_FNAME, 'r')
@@ -46,6 +37,14 @@ def make_request_using_cache(url):
         fw.close()
         return CACHE_DICTION[unique_ident]
 
+DBNAME = 'good_boys.db'
+baseurl = 'http://www.akc.org/dog-breeds/'
+
+crawl_list = []
+for x in range(1,23):
+    crawlurl = 'page/' + str(x) + '/'
+    crawl_list.append(baseurl + crawlurl)
+
 breed_list = []
 for x in crawl_list:
     page_text = make_request_using_cache(x)
@@ -56,6 +55,24 @@ for x in crawl_list:
         if breed_text not in breed_list:
             breed_list.append(breed_text)
 
+breed_urls = []
+for x in breed_list:
+    if ' ' in x:
+        x = x.replace(' ', '-')
+        breedname = baseurl + x + '/'
+        breed_urls.append(breedname)
+    else:
+        breedname = baseurl + x + '/'
+        breed_urls.append(breedname)
+
+categories_list = ['Group', 'Activity Level', 'Barking Level', 'Characteristics', 'Coat Type', 'Shedding', 'Size', 'Trainability']
+dog_dict = {}
+for item in breed_list:
+    dog_dict[item] = {}
+    for elem in categories_list:
+        dog_dict[item][elem] = 1 #for now
+
+print(dog_dict)
 
 with open('breed_list.csv', 'w', newline='') as csv_file:
     get_dog = csv.writer(csv_file, delimiter=' ', quoting=csv.QUOTE_MINIMAL)
@@ -63,8 +80,16 @@ with open('breed_list.csv', 'w', newline='') as csv_file:
         get_dog.writerow([puppy])
 csv_file.close()
 
+#creating a dictionary for each breed where the breed name is the key to another dictionary
+#and within that dictionary the category names are the keys and the values are the answers to
+#that particular dog breed
 
-
+#what I will ultimately want to do is figure out how I can either write a dictionary to a csv
+#file and subsequently establish a database from there, or how to write dictionary elements into
+#a database. I will also need to code to scrape the webpages for individual dogs to find out
+#the value for each category in dog_dict[key/breedname]
+#something along the lines of "if <whatever tag text> == dog_dict[key/breedname], then
+#dog_dict[k/b][0] = <whatever group>, dog_dict[k/b][1] = <whatever activity level>, etc"
 
 def init_db(db_name): #creates/initializes the database
 
