@@ -46,14 +46,24 @@ def make_request_using_cache(url):
         fw.close()
         return CACHE_DICTION[unique_ident]
 
-page_text = make_request_using_cache(baseurl)
-page_soup = BeautifulSoup(page_text, 'html.parser')
-content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
 breed_list = []
-for item in content_div:
-    if item not in breed_list:
-        breed_list.append(item)
-    #print(item.string)
+for x in crawl_list:
+    page_text = make_request_using_cache(x)
+    page_soup = BeautifulSoup(page_text, 'html.parser')
+    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
+    for item in content_div:
+        breed_text = item.string
+        if breed_text not in breed_list:
+            breed_list.append(breed_text)
+
+
+with open('breed_list.csv', 'w', newline='') as csv_file:
+    get_dog = csv.writer(csv_file, delimiter=' ', quoting=csv.QUOTE_MINIMAL)
+    for puppy in breed_list:
+        get_dog.writerow([puppy])
+csv_file.close()
+
+
 
 
 def init_db(db_name): #creates/initializes the database
@@ -64,6 +74,19 @@ def init_db(db_name): #creates/initializes the database
     except Error as e:
         print(e)
 
+    statement = '''
+        DROP TABLE IF EXISTS 'Breeds';
+    '''
+    cur.execute(statement)
+    conn.commit()
+    make_table = '''
+        CREATE TABLE IF NOT EXISTS 'Breeds' (
+        'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
+        'Breed Name' TEXT
+        );
+    '''
+    cur.execute(make_table)
+    conn.commit()
 
     statement1 = '''
         DROP TABLE IF EXISTS 'Groups';
