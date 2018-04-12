@@ -58,7 +58,6 @@ def scrape_breed_names(list1, list2):
 
 breed_list = []
 k = scrape_breed_names(crawl_list, breed_list)
-#print(k)
 
 breed_urls = []
 for x in breed_list:
@@ -100,6 +99,7 @@ page = 'page/'
 gibberish = '%5B0%5D='
 activity_level = '/?activity_level'
 barking_level = '/?barking_level'
+characteristic = '/?characteristic'
 
 ###ACTIVITY LEVEL###
 
@@ -122,6 +122,8 @@ scrape_breed_names(reg_ex, reg_ex_dogs)
 scrape_breed_names(calm, calm_dogs)
 scrape_breed_names(needs_activity, active_pups)
 scrape_breed_names(energetic, energetic_dogs)
+
+###BARKING LEVEL###
 
 necessity = []
 medium = []
@@ -147,10 +149,41 @@ scrape_breed_names(talkative, vocal)
 scrape_breed_names(in_frequent, infrequent)
 scrape_breed_names(out_frequent, frequent)
 
-
-###BARKING LEVEL###
-
 ###CHARACTERISTICS###
+
+smallest_breeds = []
+largest_breeds = []
+hypoallergenic_breeds = []
+best_guard_breeds = []
+best_for_apt = []
+medium_dog_breeds = []
+smartest_dogs = []
+best_fam_dogs = []
+best_for_kids = []
+best_hairless = []
+
+crawl_urls(1,6,characteristic,'smallest-dog-breeds',smallest_breeds)
+crawl_urls(1,5,characteristic,'largest-dog-breeds',largest_breeds)
+crawl_urls(1,3,characteristic,'hypoallergenic-dogs',hypoallergenic_breeds)
+crawl_urls(1,3,characteristic,'best-guard-dogs',best_guard_breeds)
+
+small_breeds = []
+large_breeds = []
+hypo_breeds = []
+guard_breeds = []
+apt_breeds = []
+med_breeds = []
+smart_breeds = []
+fam_breeds = []
+kids_breeds = []
+hairless_breeds = []
+
+scrape_breed_names(smallest_breeds, small_breeds)
+scrape_breed_names(largest_breeds, large_breeds)
+scrape_breed_names(hypoallergenic_breeds, hypo_breeds)
+scrape_breed_names(best_guard_breeds, guard_breeds)
+
+
 
 ###COAT TYPE###
 
@@ -167,7 +200,7 @@ scrape_breed_names(out_frequent, frequent)
 
 
 
-#categories_list = ['Group', 'Activity Level', 'Barking Level', 'Characteristics', 'Coat Type', 'Shedding', 'Size', 'Trainability']
+#'Characteristics', 'Coat Type', 'Shedding', 'Size', 'Trainability'
 dog_dict = {}
 for y in range(len(breed_list)):
     dog_dict[(breed_list[y])] = {}
@@ -196,21 +229,7 @@ for y in range(len(breed_list)):
         dog_dict[(breed_list[y])]['Barking Level'] = 'Not Specified'
 
 
-# my_dict = {'App 1': 'App id1', 'App 2': 'App id2', 'App 3': 'App id3'}
-# with open('test.csv', 'w') as f:
-#     fieldnames = ['Application Name', 'Application ID']
-#     writer = csv.DictWriter(f, fieldnames=fieldnames)
-#     writer.writeheader()
-#     data = [dict(zip(fieldnames, [k, v])) for k, v in my_dict.items()]
-#     writer.writerows(data)
-#
-# my_dict = {'App 1': 'App id1', 'App 2': 'App id2', 'App 3': 'App id3'}
-# with open('test.csv', 'w') as f:
-#     f.write('Application Name, Application ID\n')
-#     for key in my_dict.keys():
-#         f.write("%s,%s\n"%(key,my_dict[key]))
-
-###figure out how to write dictionary to csv
+###CSV###
 
 with open('master_list.csv', 'w') as f:
     f.write('Breed, Group, Activity_Level, Barking_Level\n')
@@ -221,28 +240,8 @@ f.close()
 
 MASTERCSV = 'master_list.csv'
 
-# with open('breed_list.csv', 'w', newline='') as csv_file:
-#     get_dog = csv.writer(csv_file, delimiter=' ', quoting=csv.QUOTE_MINIMAL)
-#     headers = ['Breed', 'Group']
-#     get_dog.writeheader()
-#     for puppy in breed_list:
-#         get_dog.writerow([puppy])
-# csv_file.close()
 
-#creating a dictionary for each breed where the breed name is the key to another dictionary
-#and within that dictionary the category names are the keys and the values are the answers to
-#that particular dog breed
-
-#what I will ultimately want to do is figure out how I can either write a dictionary to a csv
-#file and subsequently establish a database from there, or how to write dictionary elements into
-#a database. I will also need to code to scrape the webpages for individual dogs to find out
-#the value for each category in dog_dict[key/breedname]
-#something along the lines of "if <whatever tag text> == dog_dict[key/breedname], then
-#dog_dict[k/b][0] = <whatever group>, dog_dict[k/b][1] = <whatever activity level>, etc"
-
-#also possible to scrape pages and append all breed names in that category to a list, then
-#write a bunch of if/else statements assigning dictionary keys to values based on whether or
-#not the dog is in a certain list
+###DATABASE###
 
 def init_db(db_name): #creates/initializes the database
 
@@ -269,6 +268,8 @@ def init_db(db_name): #creates/initializes the database
         'Shedding' TEXT,
         'Size' TEXT,
         'Trainability' TEXT
+        --FOREIGN KEY('BroadBeanOriginId') REFERENCES 'Countries'('Id'),
+        --FOREIGN KEY('CompanyLocationId') REFERENCES 'Countries'('Id')
         );
     '''
     cur.execute(make_table)
@@ -290,8 +291,6 @@ def init_db(db_name): #creates/initializes the database
             'Terrier Group' TEXT,
             'Non-Sporting Group' TEXT,
             'Miscellaneous Class' TEXT
-            --FOREIGN KEY('BroadBeanOriginId') REFERENCES 'Countries'('Id'),
-            --FOREIGN KEY('CompanyLocationId') REFERENCES 'Countries'('Id')
         );
     '''
     cur.execute(make_table1)
