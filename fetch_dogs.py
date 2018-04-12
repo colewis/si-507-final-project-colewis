@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 # import plotly.plotly as py
 # import pandas as pd
 
-CACHE_FNAME = 'cache.json'
+CACHE_FNAME = 'cache_money.json'
 try:
     cache_file = open(CACHE_FNAME, 'r')
     cache_contents = cache_file.read()
@@ -45,15 +45,20 @@ for x in range(1,24):
     crawlurl = 'page/' + str(x) + '/'
     crawl_list.append(baseurl + crawlurl)
 
+def scrape_breed_names(list1, list2):
+    for x in list1:
+        page_text = make_request_using_cache(x)
+        page_soup = BeautifulSoup(page_text, 'html.parser')
+        content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
+        for item in content_div:
+            breed_text = item.string
+            if breed_text not in list2:
+                list2.append(breed_text)
+    return list2
+
 breed_list = []
-for x in crawl_list:
-    page_text = make_request_using_cache(x)
-    page_soup = BeautifulSoup(page_text, 'html.parser')
-    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
-    for item in content_div:
-        breed_text = item.string
-        if breed_text not in breed_list:
-            breed_list.append(breed_text)
+k = scrape_breed_names(crawl_list, breed_list)
+#print(k)
 
 breed_urls = []
 for x in breed_list:
@@ -65,7 +70,6 @@ for x in breed_list:
         breedname = baseurl + x + '/'
         breed_urls.append(breedname)
 
-groups = ['Sporting Group', 'Working Group', 'Toy Group', 'Herding Group', 'Foundation Stock Service', 'Hound Group', 'Terrier Group', 'Non-Sporting Group', 'Miscellaneous Class']
 group_list = []
 for x in breed_urls:
     page_text = make_request_using_cache(x)
@@ -74,7 +78,6 @@ for x in breed_urls:
     for item in content_div:
         a_tag = item.find('a')
         if a_tag != None:
-            #if a_tag in groups:
             group_list.append(a_tag.string)
 
 ### fixing random mistakes in the list
@@ -85,71 +88,65 @@ group_list.insert(155, 'Non-Sporting Group')
 group_list.insert(185, 'Hound Group')
 group_list.insert(210, 'Working Group')
 
+###URL PIECES###
 
-#http://www.akc.org/dog-breeds/?activity_level%5B%5D=regular-exercise
-#http://www.akc.org/dog-breeds/ page/ 2 /?activity_level%5B0%5D=regular-exercise
+def crawl_urls(x,y,category,string,list):
+    for i in range(x,y):
+        crawlurl = page + str(i) + category + gibberish + string
+        list.append(baseurl + crawlurl)
+    return list
+
+page = 'page/'
+gibberish = '%5B0%5D='
+activity_level = '/?activity_level'
+barking_level = '/?barking_level'
 
 ###ACTIVITY LEVEL###
 
 reg_ex = []
-for x in range(1,11):
-    crawlurl = 'page/' + str(x) + '/?activity_level%5B0%5D=regular-exercise'
-    reg_ex.append(baseurl + crawlurl)
+calm = []
+needs_activity = []
+energetic = []
+
+crawl_urls(1,11,activity_level,'regular-exercise',reg_ex)
+crawl_urls(1,3,activity_level,'calm',calm)
+crawl_urls(1,4,activity_level,'needs-lots-of-activity',needs_activity)
+crawl_urls(1,8,activity_level,'energetic',energetic)
 
 reg_ex_dogs = []
-for x in reg_ex:
-    page_text = make_request_using_cache(x)
-    page_soup = BeautifulSoup(page_text, 'html.parser')
-    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
-    for item in content_div:
-        breed_text = item.string
-        if breed_text not in reg_ex_dogs:
-            reg_ex_dogs.append(breed_text)
-
-calm = []
-for x in range(1,3):
-    crawlurl = 'page/' + str(x) + '/?activity_level%5B0%5D=calm'
-    calm.append(baseurl + crawlurl)
-
 calm_dogs = []
-for x in calm:
-    page_text = make_request_using_cache(x)
-    page_soup = BeautifulSoup(page_text, 'html.parser')
-    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
-    for item in content_div:
-        breed_text = item.string
-        if breed_text not in calm_dogs:
-            calm_dogs.append(breed_text)
-
-needs_activity = []
-for x in range(1,4):
-    crawlurl = 'page/' + str(x) + '/?activity_level%5B0%5D=needs-lots-of-activity'
-    needs_activity.append(baseurl + crawlurl)
-
 active_pups = []
-for x in needs_activity:
-    page_text = make_request_using_cache(x)
-    page_soup = BeautifulSoup(page_text, 'html.parser')
-    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
-    for item in content_div:
-        breed_text = item.string
-        if breed_text not in active_pups:
-            active_pups.append(breed_text)
-
-energetic = []
-for x in range(1,8):
-    crawlurl = 'page/' + str(x) + '/?activity_level%5B0%5D=energetic'
-    energetic.append(baseurl + crawlurl)
-
 energetic_dogs = []
-for x in energetic:
-    page_text = make_request_using_cache(x)
-    page_soup = BeautifulSoup(page_text, 'html.parser')
-    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
-    for item in content_div:
-        breed_text = item.string
-        if breed_text not in energetic_dogs:
-            energetic_dogs.append(breed_text)
+
+scrape_breed_names(reg_ex, reg_ex_dogs)
+scrape_breed_names(calm, calm_dogs)
+scrape_breed_names(needs_activity, active_pups)
+scrape_breed_names(energetic, energetic_dogs)
+
+necessity = []
+medium = []
+talkative = []
+in_frequent = []
+out_frequent = []
+
+crawl_urls(1,4,barking_level,'when_necessary',necessity)
+crawl_urls(1,12,barking_level,'medium',medium)
+crawl_urls(1,4,barking_level,'likes-to-be-vocal',talkative)
+crawl_urls(1,3,barking_level,'infrequent',in_frequent)
+crawl_urls(1,3,barking_level,'frequent',out_frequent)
+
+when_necessary = []
+medium_bark = []
+vocal = []
+infrequent = []
+frequent =[]
+
+scrape_breed_names(necessity, when_necessary)
+scrape_breed_names(medium, medium_bark)
+scrape_breed_names(talkative, vocal)
+scrape_breed_names(in_frequent, infrequent)
+scrape_breed_names(out_frequent, frequent)
+
 
 ###BARKING LEVEL###
 
@@ -168,6 +165,8 @@ for x in energetic:
 ### and scrape those pages to make a list of what breeds fall in those categories
 ### then make a db to match up foreign keys (check project 3 code)
 
+
+
 #categories_list = ['Group', 'Activity Level', 'Barking Level', 'Characteristics', 'Coat Type', 'Shedding', 'Size', 'Trainability']
 dog_dict = {}
 for y in range(len(breed_list)):
@@ -183,7 +182,18 @@ for y in range(len(breed_list)):
         dog_dict[(breed_list[y])]['Activity Level'] = 'Energetic'
     else:
         dog_dict[(breed_list[y])]['Activity Level'] = 'Not Specified'
-
+    if breed_list[y] in when_necessary:
+        dog_dict[(breed_list[y])]['Barking Level'] = 'When Necessary'
+    elif breed_list[y] in medium_bark:
+        dog_dict[(breed_list[y])]['Barking Level'] = 'Medium'
+    elif breed_list[y] in vocal:
+        dog_dict[(breed_list[y])]['Barking Level'] = 'Likes To Be Vocal'
+    elif breed_list[y] in infrequent:
+        dog_dict[(breed_list[y])]['Barking Level'] = 'Infrequent'
+    elif breed_list[y] in frequent:
+        dog_dict[(breed_list[y])]['Barking Level'] = 'Frequent'
+    else:
+        dog_dict[(breed_list[y])]['Barking Level'] = 'Not Specified'
 
 
 # my_dict = {'App 1': 'App id1', 'App 2': 'App id2', 'App 3': 'App id3'}
@@ -203,9 +213,9 @@ for y in range(len(breed_list)):
 ###figure out how to write dictionary to csv
 
 with open('master_list.csv', 'w') as f:
-    f.write('Breed, Group, Activity_Level\n')
+    f.write('Breed, Group, Activity_Level, Barking_Level\n')
     for key in dog_dict.keys():
-        f.write("%s,%s,%s\n"%(key, dog_dict[key]['Group'], dog_dict[key]['Activity Level']))
+        f.write("%s,%s,%s,%s\n"%(key, dog_dict[key]['Group'], dog_dict[key]['Activity Level'], dog_dict[key]['Barking Level']))
 
 f.close()
 
@@ -252,8 +262,13 @@ def init_db(db_name): #creates/initializes the database
         'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
         'Breed Name' TEXT,
         'Group' TEXT,
-        'Activity Level' TEXT
-        --add other columns
+        'Activity Level' TEXT,
+        'Barking Level' TEXT,
+        'Characteristics' TEXT,
+        'Coat Type' TEXT,
+        'Shedding' TEXT,
+        'Size' TEXT,
+        'Trainability' TEXT
         );
     '''
     cur.execute(make_table)
@@ -419,9 +434,9 @@ def insert_dog_data():
     with open(MASTERCSV) as master_csv:
         csvReader = csv.reader(master_csv)
         for row in list(csvReader)[1:]:
-            insertion = (row[0], row[1], row[2])
+            insertion = (row[0], row[1], row[2], row[3])
             statement = 'INSERT INTO "Breeds"'
-            statement += 'VALUES (NULL, ?, ?, ?)'
+            statement += 'VALUES (NULL, ?, ?, ?, ?, NULL, NULL, NULL, NULL, NULL)'
             cur.execute(statement, insertion)
             conn.commit()
 
