@@ -85,6 +85,84 @@ group_list.insert(155, 'Non-Sporting Group')
 group_list.insert(185, 'Hound Group')
 group_list.insert(210, 'Working Group')
 
+
+#http://www.akc.org/dog-breeds/?activity_level%5B%5D=regular-exercise
+#http://www.akc.org/dog-breeds/ page/ 2 /?activity_level%5B0%5D=regular-exercise
+
+###ACTIVITY LEVEL###
+
+reg_ex = []
+for x in range(1,11):
+    crawlurl = 'page/' + str(x) + '/?activity_level%5B0%5D=regular-exercise'
+    reg_ex.append(baseurl + crawlurl)
+
+reg_ex_dogs = []
+for x in reg_ex:
+    page_text = make_request_using_cache(x)
+    page_soup = BeautifulSoup(page_text, 'html.parser')
+    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
+    for item in content_div:
+        breed_text = item.string
+        if breed_text not in reg_ex_dogs:
+            reg_ex_dogs.append(breed_text)
+
+calm = []
+for x in range(1,3):
+    crawlurl = 'page/' + str(x) + '/?activity_level%5B0%5D=calm'
+    calm.append(baseurl + crawlurl)
+
+calm_dogs = []
+for x in calm:
+    page_text = make_request_using_cache(x)
+    page_soup = BeautifulSoup(page_text, 'html.parser')
+    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
+    for item in content_div:
+        breed_text = item.string
+        if breed_text not in calm_dogs:
+            calm_dogs.append(breed_text)
+
+needs_activity = []
+for x in range(1,4):
+    crawlurl = 'page/' + str(x) + '/?activity_level%5B0%5D=needs-lots-of-activity'
+    needs_activity.append(baseurl + crawlurl)
+
+active_pups = []
+for x in needs_activity:
+    page_text = make_request_using_cache(x)
+    page_soup = BeautifulSoup(page_text, 'html.parser')
+    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
+    for item in content_div:
+        breed_text = item.string
+        if breed_text not in active_pups:
+            active_pups.append(breed_text)
+
+energetic = []
+for x in range(1,8):
+    crawlurl = 'page/' + str(x) + '/?activity_level%5B0%5D=energetic'
+    energetic.append(baseurl + crawlurl)
+
+energetic_dogs = []
+for x in energetic:
+    page_text = make_request_using_cache(x)
+    page_soup = BeautifulSoup(page_text, 'html.parser')
+    content_div = page_soup.find_all(class_="breed-type-card__title mt0 mb0 f-25 py3 px3")
+    for item in content_div:
+        breed_text = item.string
+        if breed_text not in energetic_dogs:
+            energetic_dogs.append(breed_text)
+
+###BARKING LEVEL###
+
+###CHARACTERISTICS###
+
+###COAT TYPE###
+
+###SHEDDING###
+
+###SIZE###
+
+###TRAINABILITY###
+
 ### write code to go through each category by subcategory (new baseurl per category, such as
 ### http://www.akc.org/dog-breeds/?coat_type%5B%5D=short, http://www.akc.org/dog-breeds/ page/2/ ?coat_type%5B0%5D=short)
 ### and scrape those pages to make a list of what breeds fall in those categories
@@ -95,6 +173,18 @@ dog_dict = {}
 for y in range(len(breed_list)):
     dog_dict[(breed_list[y])] = {}
     dog_dict[(breed_list[y])]['Group'] = group_list[y]
+    if breed_list[y] in reg_ex_dogs:
+        dog_dict[(breed_list[y])]['Activity Level'] = 'Regular Exercise'
+    elif breed_list[y] in calm_dogs:
+        dog_dict[(breed_list[y])]['Activity Level'] = 'Calm'
+    elif breed_list[y] in active_pups:
+        dog_dict[(breed_list[y])]['Activity Level'] = 'Needs Lots Of Activity'
+    elif breed_list[y] in energetic_dogs:
+        dog_dict[(breed_list[y])]['Activity Level'] = 'Energetic'
+    else:
+        dog_dict[(breed_list[y])]['Activity Level'] = 'Not Specified'
+
+
 
 # my_dict = {'App 1': 'App id1', 'App 2': 'App id2', 'App 3': 'App id3'}
 # with open('test.csv', 'w') as f:
@@ -113,9 +203,9 @@ for y in range(len(breed_list)):
 ###figure out how to write dictionary to csv
 
 with open('master_list.csv', 'w') as f:
-    f.write('Breed, Group\n')
+    f.write('Breed, Group, Activity_Level\n')
     for key in dog_dict.keys():
-        f.write("%s,%s\n"%(key,dog_dict[key]['Group']))
+        f.write("%s,%s,%s\n"%(key, dog_dict[key]['Group'], dog_dict[key]['Activity Level']))
 
 f.close()
 
@@ -140,6 +230,10 @@ MASTERCSV = 'master_list.csv'
 #something along the lines of "if <whatever tag text> == dog_dict[key/breedname], then
 #dog_dict[k/b][0] = <whatever group>, dog_dict[k/b][1] = <whatever activity level>, etc"
 
+#also possible to scrape pages and append all breed names in that category to a list, then
+#write a bunch of if/else statements assigning dictionary keys to values based on whether or
+#not the dog is in a certain list
+
 def init_db(db_name): #creates/initializes the database
 
     try:
@@ -157,7 +251,8 @@ def init_db(db_name): #creates/initializes the database
         CREATE TABLE IF NOT EXISTS 'Breeds' (
         'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
         'Breed Name' TEXT,
-        'Group' TEXT
+        'Group' TEXT,
+        'Activity Level' TEXT
         --add other columns
         );
     '''
@@ -171,7 +266,6 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table1 = '''
         CREATE TABLE IF NOT EXISTS 'Groups' (
-            'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
             'Sporting Group' TEXT,
             'Working Group' TEXT,
             'Toy Group' TEXT,
@@ -196,7 +290,6 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table2 = '''
         CREATE TABLE IF NOT EXISTS 'Activity_Level' (
-            'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
             'Couch Potato' TEXT,
             'Regular Exercise' TEXT,
             'Calm' TEXT,
@@ -214,7 +307,6 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table3 = '''
         CREATE TABLE IF NOT EXISTS 'Barking_Level' (
-            'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
             'When Necessary' TEXT,
             'Medium' TEXT,
             'Likes To Be Vocal' TEXT,
@@ -232,7 +324,6 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table4 = '''
         CREATE TABLE IF NOT EXISTS 'Characteristics' (
-            'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
             'Smallest Dog Breeds' TEXT,
             'Largest Dog Breeds' TEXT,
             'Hypoallergenic Dogs' TEXT,
@@ -255,7 +346,6 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table5 = '''
         CREATE TABLE IF NOT EXISTS 'Coat_Type' (
-            'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
             'Hairless' TEXT,
             'Medium' TEXT,
             'Smooth' TEXT,
@@ -274,7 +364,6 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table6 = '''
         CREATE TABLE IF NOT EXISTS 'Shedding' (
-            'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
             'Infrequent' TEXT,
             'Frequent' TEXT,
             'Regularly' TEXT,
@@ -292,7 +381,6 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table7 = '''
         CREATE TABLE IF NOT EXISTS 'Size' (
-            'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
             'XSmall' TEXT,
             'Small' TEXT,
             'Medium' TEXT,
@@ -310,7 +398,6 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table8 = '''
         CREATE TABLE IF NOT EXISTS 'Trainability' (
-            'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
             'May Be Stubborn' TEXT,
             'Eager To Please' TEXT,
             'Easy Training' TEXT,
@@ -332,9 +419,9 @@ def insert_dog_data():
     with open(MASTERCSV) as master_csv:
         csvReader = csv.reader(master_csv)
         for row in list(csvReader)[1:]:
-            insertion = (row[0], row[1])
+            insertion = (row[0], row[1], row[2])
             statement = 'INSERT INTO "Breeds"'
-            statement += 'VALUES (NULL, ?, ?)'
+            statement += 'VALUES (NULL, ?, ?, ?)'
             cur.execute(statement, insertion)
             conn.commit()
 
