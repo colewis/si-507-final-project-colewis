@@ -382,16 +382,15 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table = '''
         CREATE TABLE IF NOT EXISTS 'Breeds' (
-        'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
-        'Breed Name' TEXT,
+        --'Id' INTEGER AUTOINCREMENT, --PRIMARY KEY AUTOINCREMENT,
+        'BreedName' TEXT,
         'Group' TEXT,
-        'Activity Level' TEXT,
-        'Barking Level' TEXT,
-        'Coat Type' TEXT,
+        'ActivityLevel' TEXT,
+        'BarkingLevel' TEXT,
+        'CoatType' TEXT,
         'Shedding' TEXT,
         'Size' TEXT,
         'Trainability' TEXT
-        --FOREIGN KEY('BroadBeanOriginId') REFERENCES 'Countries'('Id'),
         --FOREIGN KEY('CompanyLocationId') REFERENCES 'Countries'('Id')
         );
     '''
@@ -405,17 +404,59 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table1 = '''
         CREATE TABLE IF NOT EXISTS 'XS_Dogs' (
-        'Breed Name' TEXT,
+        'BreedName' TEXT,
         'Group' TEXT,
-        'Activity Level' TEXT,
-        'Barking Level' TEXT,
-        'Coat Type' TEXT,
+        'ActivityLevel' TEXT,
+        'BarkingLevel' TEXT,
+        'CoatType' TEXT,
         'Shedding' TEXT,
         'Trainability' TEXT
+        --FOREIGN KEY('BreedName') REFERENCES 'Breeds'('Size') --might be 'Breeds'('Size') -- might need to make PRIMARY KEY Size, not BreedName
         );
     '''
     cur.execute(make_table1)
     conn.commit()
+
+    # try:
+    #     upd_stmt1 = '''
+    #     UPDATE XSmall_Dogs
+    #     SET BreedName = (SELECT Breeds.BreedName From Breeds)
+    #     WHERE EXISTS (SELECT * FROM Breeds WHERE Breeds.Size = "XSmall")
+    #     --SELECT BreedName
+    #     --FROM Breeds
+    #     --    JOIN XSmall_Dogs
+    #     --        ON Breeds.BreedName = XSmall_Dogs.BreedName
+    #     --WHERE Breeds.BreedName="XSmall"
+    #     '''
+    #     cur.execute(upd_stmt1)
+    #     conn.commit()
+    # except:
+    #     pass
+
+    # for key in dog_dict:
+    #     if dog_dict[key]['Size'] == 'XSmall':
+    # try:
+    #     upd_stmt1 = 'UPDATE XSmall_Dogs SET BreedName = BreedName = Breeds.BreedName WHERE Size = "XSmall"'
+    #'INSERT OR REPLACE INTO XS_Dogs VALUES(Breeds.BreedName WHERE Size = "XSmall")'
+    #
+    #     #' + key + ' WHERE Breeds.BreedName =' '"' + key + '"'
+    #     cur.execute(upd_stmt1)
+    #     conn.commit()
+    # except:
+    #     pass
+
+# for key in json_dict:
+#     try:
+#         statement5 = 'UPDATE Bars SET CompanyLocationId =' + str(json_dict[key]) + ' WHERE CompanyLocation =' '"' + key + '"'
+#         cur.execute(statement5)
+#     except:
+#         pass
+# for item in json_dict:
+#     try:
+#         statement6 = 'UPDATE Bars SET BroadBeanOriginId =' + str(json_dict[item]) + ' WHERE BroadBeanOrigin =' '"' + item + '"'
+#         cur.execute(statement6)
+#     except:
+#         pass
 
 
     statement2 = '''
@@ -425,11 +466,11 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table2 = '''
         CREATE TABLE IF NOT EXISTS 'Small_Dogs' (
-        'Breed Name' TEXT,
+        'BreedName' TEXT,
         'Group' TEXT,
-        'Activity Level' TEXT,
-        'Barking Level' TEXT,
-        'Coat Type' TEXT,
+        'ActivityLevel' TEXT,
+        'BarkingLevel' TEXT,
+        'CoatType' TEXT,
         'Shedding' TEXT,
         'Trainability' TEXT
         );
@@ -444,11 +485,11 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table3 = '''
         CREATE TABLE IF NOT EXISTS 'Medium_Dogs' (
-        'Breed Name' TEXT,
+        'BreedName' TEXT,
         'Group' TEXT,
-        'Activity Level' TEXT,
-        'Barking Level' TEXT,
-        'Coat Type' TEXT,
+        'ActivityLevel' TEXT,
+        'BarkingLevel' TEXT,
+        'CoatType' TEXT,
         'Shedding' TEXT,
         'Trainability' TEXT
         );
@@ -463,11 +504,11 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table4 = '''
         CREATE TABLE IF NOT EXISTS 'Large_Dogs' (
-        'Breed Name' TEXT,
+        'BreedName' TEXT,
         'Group' TEXT,
-        'Activity Level' TEXT,
-        'Barking Level' TEXT,
-        'Coat Type' TEXT,
+        'ActivityLevel' TEXT,
+        'BarkingLevel' TEXT,
+        'CoatType' TEXT,
         'Shedding' TEXT,
         'Trainability' TEXT
         );
@@ -482,11 +523,11 @@ def init_db(db_name): #creates/initializes the database
     conn.commit()
     make_table5 = '''
         CREATE TABLE IF NOT EXISTS 'XL_Dogs' (
-        'Breed Name' TEXT,
+        'BreedName' TEXT,
         'Group' TEXT,
-        'Activity Level' TEXT,
-        'Barking Level' TEXT,
-        'Coat Type' TEXT,
+        'ActivityLevel' TEXT,
+        'BarkingLevel' TEXT,
+        'CoatType' TEXT,
         'Shedding' TEXT,
         'Trainability' TEXT
         );
@@ -541,7 +582,7 @@ def insert_dog_data():
         for row in list(csvReader)[1:]:
             insertion = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]) #, row[5]
             statement = 'INSERT INTO "Breeds"'
-            statement += 'VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)'
+            statement += 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
             cur.execute(statement, insertion)
             conn.commit()
 
