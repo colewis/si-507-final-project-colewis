@@ -394,15 +394,20 @@ def init_db(db_name): #creates/initializes the database
     make_table = '''
         CREATE TABLE IF NOT EXISTS 'Breeds' (
         'BreedName' TEXT,
-        'Group' TEXT,
-        'ActivityLevel' TEXT,
-        'BarkingLevel' TEXT,
-        'CoatType' TEXT,
-        'Shedding' TEXT,
-        --'Size' TEXT,
+        'Group_Id' INTEGER,
+        'ActivityLevel_Id' INTEGER,
+        'BarkingLevel_Id' TEXT,
+        'CoatType_Id' TEXT,
+        'Shedding_Id' TEXT,
         'Size_Id' INTEGER,
-        'Trainability' TEXT,
-        FOREIGN KEY('Size_Id') REFERENCES 'Size'('Id')
+        'Trainability_Id' TEXT,
+        FOREIGN KEY('Size_Id') REFERENCES 'Size'('Id'),
+        FOREIGN KEY('Group_Id') REFERENCES 'Group'('Id'),
+        FOREIGN KEY('ActivityLevel_Id') REFERENCES 'Activity_Level'('Id'),
+        FOREIGN KEY('BarkingLevel_Id') REFERENCES 'Barking_Level'('Id'),
+        FOREIGN KEY('CoatType_Id') REFERENCES 'Coat_Type'('Id'),
+        FOREIGN KEY('Shedding_Id') REFERENCES 'Shedding'('Id'),
+        FOREIGN KEY('Trainability_Id') REFERENCES 'Trainability'('Id')
         );
     '''
     cur.execute(make_table)
@@ -417,75 +422,98 @@ def init_db(db_name): #creates/initializes the database
         CREATE TABLE IF NOT EXISTS 'Size' (
         'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
         'Description' TEXT
-        --FOREIGN KEY('BreedName') REFERENCES 'Breeds'('Size') --might be 'Breeds'('Size') -- might need to make PRIMARY KEY Size, not BreedName
         );
     '''
     cur.execute(make_table1)
     conn.commit()
 
-
-    conn.close()
-
-
-
-def insert_size_data(dog_dict):
-    conn = sqlite3.connect(DBNAME)
-    cur = conn.cursor()
-
     statement2 = '''
-    INSERT INTO 'Size'('Description')
-    VALUES ('XSmall')
+        DROP TABLE IF EXISTS 'Group';
     '''
     cur.execute(statement2)
     conn.commit()
+    make_table2 = '''
+        CREATE TABLE IF NOT EXISTS 'Group' (
+        'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
+        'Description' TEXT
+        );
+    '''
+    cur.execute(make_table2)
+    conn.commit()
 
     statement3 = '''
-    INSERT INTO 'Size'('Description')
-    VALUES ('Small')
+        DROP TABLE IF EXISTS 'Activity_Level';
     '''
     cur.execute(statement3)
     conn.commit()
+    make_table3 = '''
+        CREATE TABLE IF NOT EXISTS 'Activity_Level' (
+        'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
+        'Description' TEXT
+        );
+    '''
+    cur.execute(make_table3)
+    conn.commit()
 
     statement4 = '''
-    INSERT INTO 'Size'('Description')
-    VALUES ('Medium')
+        DROP TABLE IF EXISTS 'Barking_Level';
     '''
     cur.execute(statement4)
     conn.commit()
+    make_table4 = '''
+        CREATE TABLE IF NOT EXISTS 'Barking_Level' (
+        'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
+        'Description' TEXT
+        );
+    '''
+    cur.execute(make_table4)
+    conn.commit()
 
     statement5 = '''
-    INSERT INTO 'Size'('Description')
-    VALUES ('Large')
+        DROP TABLE IF EXISTS 'Coat_Type';
     '''
     cur.execute(statement5)
     conn.commit()
+    make_table5 = '''
+        CREATE TABLE IF NOT EXISTS 'Coat_Type' (
+        'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
+        'Description' TEXT
+        );
+    '''
+    cur.execute(make_table5)
+    conn.commit()
 
     statement6 = '''
-    INSERT INTO 'Size'('Description')
-    VALUES ('XLarge')
+        DROP TABLE IF EXISTS 'Shedding';
     '''
     cur.execute(statement6)
     conn.commit()
+    make_table6 = '''
+        CREATE TABLE IF NOT EXISTS 'Shedding' (
+        'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
+        'Description' TEXT
+        );
+    '''
+    cur.execute(make_table6)
+    conn.commit()
 
     statement7 = '''
-    INSERT INTO 'Size'('Description')
-    VALUES ('Not Specified')
+        DROP TABLE IF EXISTS 'Trainability';
     '''
     cur.execute(statement7)
     conn.commit()
-
-    size_dict = {'XSmall':1, 'Small':2, 'Medium':3, 'Large':4, 'XLarge':5, 'Not Specified':6}
-
-    #for item in dog_dict[item]['Size']: #item=dog breed names ###something in this statement causes an error
-    for key in pupdata:
-        statement8 = 'UPDATE Breeds SET Size_Id =' + str(size_dict[(pupdata[key][5])]) + ' WHERE BreedName =' '"' + key + '"'
-        #print(statement8)
-        cur.execute(statement8)
-        conn.commit()
+    make_table7 = '''
+        CREATE TABLE IF NOT EXISTS 'Trainability' (
+        'Id' INTEGER PRIMARY KEY AUTOINCREMENT,
+        'Description' TEXT
+        );
+    '''
+    cur.execute(make_table7)
+    conn.commit()
 
     conn.close()
 
-############################
+###############################
 
 def insert_dog_data():
     conn = sqlite3.connect(DBNAME)
@@ -505,7 +533,443 @@ def insert_dog_data():
     conn.close()
     return pupdata
 
+############################
+
+def insert_size_data(pupdata):
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    statement1 = '''
+    INSERT INTO 'Size'('Description')
+    VALUES ('XSmall')
+    '''
+    cur.execute(statement1)
+    conn.commit()
+
+    statement2 = '''
+    INSERT INTO 'Size'('Description')
+    VALUES ('Small')
+    '''
+    cur.execute(statement2)
+    conn.commit()
+
+    statement3 = '''
+    INSERT INTO 'Size'('Description')
+    VALUES ('Medium')
+    '''
+    cur.execute(statement3)
+    conn.commit()
+
+    statement4 = '''
+    INSERT INTO 'Size'('Description')
+    VALUES ('Large')
+    '''
+    cur.execute(statement4)
+    conn.commit()
+
+    statement5 = '''
+    INSERT INTO 'Size'('Description')
+    VALUES ('XLarge')
+    '''
+    cur.execute(statement5)
+    conn.commit()
+
+    statement6 = '''
+    INSERT INTO 'Size'('Description')
+    VALUES ('Not Specified')
+    '''
+    cur.execute(statement6)
+    conn.commit()
+
+    size_dict = {'XSmall':1, 'Small':2, 'Medium':3, 'Large':4, 'XLarge':5, 'Not Specified':6}
+
+    for key in pupdata:
+        statement8 = 'UPDATE Breeds SET Size_Id =' + str(size_dict[(pupdata[key][5])]) + ' WHERE BreedName =' '"' + key + '"'
+        cur.execute(statement8)
+        conn.commit()
+
+    conn.close()
+
+############################
+
+def insert_group_data(pupdata):
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    statement1 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Sporting Group')
+    '''
+    cur.execute(statement1)
+    conn.commit()
+
+    statement2 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Working Group')
+    '''
+    cur.execute(statement2)
+    conn.commit()
+
+    statement3 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Toy Group')
+    '''
+    cur.execute(statement3)
+    conn.commit()
+
+    statement4 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Herding Group')
+    '''
+    cur.execute(statement4)
+    conn.commit()
+
+    statement5 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Foundation Stock Service')
+    '''
+    cur.execute(statement5)
+    conn.commit()
+
+    statement6 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Hound Group')
+    '''
+    cur.execute(statement6)
+    conn.commit()
+
+    statement7 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Terrier Group')
+    '''
+    cur.execute(statement7)
+    conn.commit()
+
+    statement8 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Non-Sporting Group')
+    '''
+    cur.execute(statement8)
+    conn.commit()
+
+    statement9 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Miscellaneous Class')
+    '''
+    cur.execute(statement9)
+    conn.commit()
+
+    statement10 = '''
+    INSERT INTO 'Group'('Description')
+    VALUES ('Not Specified')
+    '''
+    cur.execute(statement10)
+    conn.commit()
+
+    group_dict = {'Sporting Group':1, 'Working Group':2, 'Toy Group':3, 'Herding Group':4, 'Foundation Stock Service':5, 'Hound Group':6, 'Terrier Group':7, 'Non-Sporting Group':8, 'Miscellaneous Class':9, 'Not Specified':10}
+
+    for key in pupdata:
+        statement8 = 'UPDATE Breeds SET Group_Id =' + str(group_dict[(pupdata[key][0])]) + ' WHERE BreedName =' '"' + key + '"'
+        cur.execute(statement8)
+        conn.commit()
+
+    conn.close()
+
+############################
+
+def insert_act_data(pupdata):
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    statement1 = '''
+    INSERT INTO 'Activity_Level'('Description')
+    VALUES ('Regular Exercise')
+    '''
+    cur.execute(statement1)
+    conn.commit()
+
+    statement2 = '''
+    INSERT INTO 'Activity_Level'('Description')
+    VALUES ('Calm')
+    '''
+    cur.execute(statement2)
+    conn.commit()
+
+    statement3 = '''
+    INSERT INTO 'Activity_Level'('Description')
+    VALUES ('Needs Lots Of Activity')
+    '''
+    cur.execute(statement3)
+    conn.commit()
+
+    statement4 = '''
+    INSERT INTO 'Activity_Level'('Description')
+    VALUES ('Energetic')
+    '''
+    cur.execute(statement4)
+    conn.commit()
+
+    statement5 = '''
+    INSERT INTO 'Activity_Level'('Description')
+    VALUES ('Not Specified')
+    '''
+    cur.execute(statement5)
+    conn.commit()
+
+    act_dict = {'Regular Exercise':1, 'Calm':2, 'Needs Lots Of Activity':3, 'Energetic':4, 'Not Specified':5}
+
+    for key in pupdata:
+        statement8 = 'UPDATE Breeds SET ActivityLevel_Id =' + str(act_dict[(pupdata[key][1])]) + ' WHERE BreedName =' '"' + key + '"'
+        cur.execute(statement8)
+        conn.commit()
+
+    conn.close()
+
+#############################
+
+def insert_bark_data(pupdata):
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    statement1 = '''
+    INSERT INTO 'Barking_Level'('Description')
+    VALUES ('When Necessary')
+    '''
+    cur.execute(statement1)
+    conn.commit()
+
+    statement2 = '''
+    INSERT INTO 'Barking_Level'('Description')
+    VALUES ('Medium')
+    '''
+    cur.execute(statement2)
+    conn.commit()
+
+    statement3 = '''
+    INSERT INTO 'Barking_Level'('Description')
+    VALUES ('Likes To Be Vocal')
+    '''
+    cur.execute(statement3)
+    conn.commit()
+
+    statement4 = '''
+    INSERT INTO 'Barking_Level'('Description')
+    VALUES ('Infrequent')
+    '''
+    cur.execute(statement4)
+    conn.commit()
+
+    statement5 = '''
+    INSERT INTO 'Barking_Level'('Description')
+    VALUES ('Frequent')
+    '''
+    cur.execute(statement5)
+    conn.commit()
+
+    statement6 = '''
+    INSERT INTO 'Barking_Level'('Description')
+    VALUES ('Not Specified')
+    '''
+    cur.execute(statement6)
+    conn.commit()
+
+    bark_dict = {'When Necessary':1, 'Medium':2, 'Likes To Be Vocal':3, 'Infrequent':4, 'Frequent':5, 'Not Specified':6}
+
+    for key in pupdata:
+        statement8 = 'UPDATE Breeds SET BarkingLevel_Id =' + str(bark_dict[(pupdata[key][2])]) + ' WHERE BreedName =' '"' + key + '"'
+        cur.execute(statement8)
+        conn.commit()
+
+    conn.close()
+
+############################
+
+def insert_coat_data(pupdata):
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    statement1 = '''
+    INSERT INTO 'Coat_Type'('Description')
+    VALUES ('Hairless')
+    '''
+    cur.execute(statement1)
+    conn.commit()
+
+    statement2 = '''
+    INSERT INTO 'Coat_Type'('Description')
+    VALUES ('Medium')
+    '''
+    cur.execute(statement2)
+    conn.commit()
+
+    statement3 = '''
+    INSERT INTO 'Coat_Type'('Description')
+    VALUES ('Smooth')
+    '''
+    cur.execute(statement3)
+    conn.commit()
+
+    statement4 = '''
+    INSERT INTO 'Coat_Type'('Description')
+    VALUES ('Short')
+    '''
+    cur.execute(statement4)
+    conn.commit()
+
+    statement5 = '''
+    INSERT INTO 'Coat_Type'('Description')
+    VALUES ('Long')
+    '''
+    cur.execute(statement5)
+    conn.commit()
+
+    statement6 = '''
+    INSERT INTO 'Coat_Type'('Description')
+    VALUES ('Wire')
+    '''
+    cur.execute(statement6)
+    conn.commit()
+
+    statement7 = '''
+    INSERT INTO 'Coat_Type'('Description')
+    VALUES ('Not Specified')
+    '''
+    cur.execute(statement7)
+    conn.commit()
+
+    coat_dict = {'Hairless':1, 'Medium':2, 'Smooth':3, 'Short':4, 'Long':5, 'Wire':6, 'Not Specified':7}
+
+    for key in pupdata:
+        statement8 = 'UPDATE Breeds SET CoatType_Id =' + str(coat_dict[(pupdata[key][3])]) + ' WHERE BreedName =' '"' + key + '"'
+        cur.execute(statement8)
+        conn.commit()
+
+    conn.close()
+
+############################
+
+def insert_shed_data(pupdata):
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    statement1 = '''
+    INSERT INTO 'Shedding'('Description')
+    VALUES ('Infrequent')
+    '''
+    cur.execute(statement1)
+    conn.commit()
+
+    statement2 = '''
+    INSERT INTO 'Shedding'('Description')
+    VALUES ('Frequent')
+    '''
+    cur.execute(statement2)
+    conn.commit()
+
+    statement3 = '''
+    INSERT INTO 'Shedding'('Description')
+    VALUES ('Regularly')
+    '''
+    cur.execute(statement3)
+    conn.commit()
+
+    statement4 = '''
+    INSERT INTO 'Shedding'('Description')
+    VALUES ('Seasonal')
+    '''
+    cur.execute(statement4)
+    conn.commit()
+
+    statement5 = '''
+    INSERT INTO 'Shedding'('Description')
+    VALUES ('Occasional')
+    '''
+    cur.execute(statement5)
+    conn.commit()
+
+    statement6 = '''
+    INSERT INTO 'Shedding'('Description')
+    VALUES ('Not Specified')
+    '''
+    cur.execute(statement6)
+    conn.commit()
+
+    shedding_dict = {'Infrequent':1, 'Frequent':2, 'Regularly':3, 'Seasonal':4, 'Occasional':5, 'Not Specified':6}
+
+    for key in pupdata:
+        statement8 = 'UPDATE Breeds SET Shedding_Id =' + str(shedding_dict[(pupdata[key][4])]) + ' WHERE BreedName =' '"' + key + '"'
+        cur.execute(statement8)
+        conn.commit()
+
+    conn.close()
+
+############################
+
+def insert_train_data(pupdata):
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    statement1 = '''
+    INSERT INTO 'Trainability'('Description')
+    VALUES ('May Be Stubborn')
+    '''
+    cur.execute(statement1)
+    conn.commit()
+
+    statement2 = '''
+    INSERT INTO 'Trainability'('Description')
+    VALUES ('Eager To Please')
+    '''
+    cur.execute(statement2)
+    conn.commit()
+
+    statement3 = '''
+    INSERT INTO 'Trainability'('Description')
+    VALUES ('Easy Training')
+    '''
+    cur.execute(statement3)
+    conn.commit()
+
+    statement4 = '''
+    INSERT INTO 'Trainability'('Description')
+    VALUES ('Agreeable')
+    '''
+    cur.execute(statement4)
+    conn.commit()
+
+    statement5 = '''
+    INSERT INTO 'Trainability'('Description')
+    VALUES ('Independent')
+    '''
+    cur.execute(statement5)
+    conn.commit()
+
+    statement6 = '''
+    INSERT INTO 'Trainability'('Description')
+    VALUES ('Not Specified')
+    '''
+    cur.execute(statement6)
+    conn.commit()
+
+    train_dict = {'May Be Stubborn':1, 'Eager To Please':2, 'Easy Training':3, 'Agreeable':4, 'Independent':5, 'Not Specified':6}
+
+    for key in pupdata:
+        statement8 = 'UPDATE Breeds SET Trainability_Id =' + str(train_dict[(pupdata[key][6])]) + ' WHERE BreedName =' '"' + key + '"'
+        cur.execute(statement8)
+        conn.commit()
+
+    conn.close()
+
+############################
+
 init_db(DBNAME)
 
 x = insert_dog_data()
+#print(x)
 insert_size_data(x)
+insert_group_data(x)
+insert_act_data(x)
+insert_bark_data(x)
+insert_coat_data(x)
+insert_shed_data(x)
+insert_train_data(x)
