@@ -2,9 +2,11 @@ import sqlite3
 import csv
 import json
 import requests
+import requests_cache
 import webbrowser
 import random
 from bs4 import BeautifulSoup
+from flask import Flask, render_template, request, url_for
 
 ###FILE NAMES###
 MASTERCSV = 'master_list.csv'
@@ -36,6 +38,8 @@ except:
 
 def get_unique_key(url):
     return url
+
+requests_cache.install_cache(CACHE_FNAME, expire_after=3600) #open cache file with text editor
 
 def make_request_using_cache(url):
     unique_ident = get_unique_key(url)
@@ -973,3 +977,44 @@ insert_bark_data(x)
 insert_coat_data(x)
 insert_shed_data(x)
 insert_train_data(x)
+
+###FLASK APP###
+
+def fetch_data():
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    for row in cur.execute('SELECT * FROM Breeds WHERE Size_Id=5 ORDER BY BreedName'):
+        breed = row[0]
+    conn.close()
+    return breed
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+   return render_template('home.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/contents')
+def contents():
+    return render_template('contents.html')
+
+@app.route('/petitepups')
+def petitepups():
+    return render_template('petitepups.html')
+
+@app.route('/bigboys')
+def bigboys():
+    rows = fetch_data()
+    fetch_template = {
+    'breed':rows
+    }
+    return render_template('bigboys.html', fetch_template)
+
+if __name__ == '__main__':
+    print('starting Flask app', app.name)
+    app.run(debug=True)
