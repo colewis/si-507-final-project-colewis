@@ -2,7 +2,33 @@
 
 <h1>BIG BOYS</h1>
 <h1>dogs who think they're puppies but they're actually HUGE</h1>
-<a href='/'>Go home, good boy</a>
+
+<!-- {% for row in rows %}
+            <tr>
+               <td>{{row["breed"]}}</td>
+               <td>{{row["addr"]}}</td>
+               <td> {{ row["city"]}}</td>
+               <td>{{row['pin']}}</td>
+            </tr>
+         {% endfor %} -->
+
+
+         <html>
+            <body>
+
+               {{ breed }}
+
+            </body>
+         </html>
+
+{% for dog in res_list %}
+<tr>
+  <td>{{dog[0]}}</td>
+  <br/><br/>
+</tr>
+{% endfor %}
+
+<br/><br/><a href='/'>Go home, good boy</a>
 <!-- rows = fetch_data()
 fetch_template = {
 'breed':rows

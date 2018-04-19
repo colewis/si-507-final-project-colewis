@@ -9,11 +9,13 @@ from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, url_for
 
 ###FILE NAMES###
+
 MASTERCSV = 'master_list.csv'
 DBNAME = 'good_boys.db'
 CACHE_FNAME = 'cache_money.json'
 
 ###URL PIECES###
+
 baseurl = 'http://www.akc.org/dog-breeds/'
 page = 'page/'
 gibberish = '%5B0%5D='
@@ -23,7 +25,6 @@ coat_type = '/?coat_type'
 shedding = '/?shedding'
 size = '/?size'
 trainability = '/?trainability'
-###when test running, comment out the caching portion and just start from the CSV bit -- no need to recreate the files
 
 ###CACHE CODE###
 
@@ -38,8 +39,6 @@ except:
 
 def get_unique_key(url):
     return url
-
-requests_cache.install_cache(CACHE_FNAME, expire_after=3600) #open cache file with text editor
 
 def make_request_using_cache(url):
     unique_ident = get_unique_key(url)
@@ -71,10 +70,10 @@ def scrape_breed_names(list1, list2):
                 list2.append(breed_text)
     return list2
 
-###CALL ALL FUNCTIONS AT BOTTOM
+###CALL ALL FUNCTIONS AT BOTTOM###
 
 crawl_list = []
-for x in range(1,24):
+for x in range(1,24): #24
     crawlurl = 'page/' + str(x) + '/'
     crawl_list.append(baseurl + crawlurl)
 
@@ -82,7 +81,6 @@ breed_list = []
 k = scrape_breed_names(crawl_list, breed_list)
 
 ##MAKE BELOW INTO FUNCTIONS OR CLASSES OR WHATEVER###
-
 
 breed_urls = []
 for x in breed_list:
@@ -94,8 +92,9 @@ for x in breed_list:
         breedname = baseurl + x + '/'
         breed_urls.append(breedname)
 
+
 group_list = []
-for x in breed_urls:
+for x in breed_urls[0:15]:
     page_text = make_request_using_cache(x)
     page_soup = BeautifulSoup(page_text, 'html.parser')
     content_div = page_soup.find_all(class_="attribute-list__description attribute-list__text ")
@@ -106,25 +105,19 @@ for x in breed_urls:
 
 ### fixing random mistakes in the list
 group_list.insert(13, 'Foundation Stock Service')
-group_list.insert(76, 'Hound Group')
-group_list.insert(118, 'Hound Group')
-group_list.insert(155, 'Non-Sporting Group')
-group_list.insert(185, 'Hound Group')
-group_list.insert(210, 'Working Group')
 
 
 
 def crawl_urls(x,y,category,string,list):
-    if x != y:
-        for i in range(x,y):
-            crawlurl = page + str(i) + category + gibberish + string
-            list.append(baseurl + crawlurl)
-        return list
-    else:
-        crawlurl = category[1:] + gibberish + string
-        list.append(baseurl + crawlurl)
-        return list
-
+    # if x != y:
+    #     for i in range(x,y):
+    #         crawlurl = page + str(i) + category + gibberish + string
+    #         list.append(baseurl + crawlurl)
+    #     return list
+    # else:
+    crawlurl = category[1:] + gibberish + string
+    list.append(baseurl + crawlurl)
+    return list
 
 ###ACTIVITY LEVEL###
 
@@ -133,10 +126,10 @@ calm = []
 needs_activity = []
 energetic = []
 
-crawl_urls(1,11,activity_level,'regular-exercise',reg_ex)
-crawl_urls(1,3,activity_level,'calm',calm)
-crawl_urls(1,4,activity_level,'needs-lots-of-activity',needs_activity)
-crawl_urls(1,8,activity_level,'energetic',energetic)
+crawl_urls(1,1,activity_level,'regular-exercise',reg_ex)
+crawl_urls(1,1,activity_level,'calm',calm)
+crawl_urls(1,1,activity_level,'needs-lots-of-activity',needs_activity)
+crawl_urls(1,1,activity_level,'energetic',energetic)
 
 reg_ex_dogs = []
 calm_dogs = []
@@ -156,11 +149,11 @@ talkative = []
 in_frequent = []
 out_frequent = []
 
-crawl_urls(1,4,barking_level,'when_necessary',necessity)
-crawl_urls(1,12,barking_level,'medium',medium)
-crawl_urls(1,4,barking_level,'likes-to-be-vocal',talkative)
-crawl_urls(1,3,barking_level,'infrequent',in_frequent)
-crawl_urls(1,3,barking_level,'frequent',out_frequent)
+crawl_urls(1,1,barking_level,'when_necessary',necessity)
+crawl_urls(1,1,barking_level,'medium',medium)
+crawl_urls(1,1,barking_level,'likes-to-be-vocal',talkative)
+crawl_urls(1,1,barking_level,'infrequent',in_frequent)
+crawl_urls(1,1,barking_level,'frequent',out_frequent)
 
 when_necessary = []
 medium_bark = []
@@ -184,10 +177,10 @@ long_hair = []
 wire = []
 
 crawl_urls(1,1,coat_type,'hairless',hairless)
-crawl_urls(1,10,coat_type,'medium',medium_hair)
+crawl_urls(1,1,coat_type,'medium',medium_hair)
 crawl_urls(1,1,coat_type,'smooth',smooth)
-crawl_urls(1,10,coat_type,'short',short_hair)
-crawl_urls(1,5,coat_type,'long',long_hair)
+crawl_urls(1,1,coat_type,'short',short_hair)
+crawl_urls(1,1,coat_type,'long',long_hair)
 crawl_urls(1,1,coat_type,'wire',wire)
 
 no_hair = []
@@ -212,11 +205,11 @@ reg_shed = []
 seas_shed = []
 occ_shed = []
 
-crawl_urls(1,4,shedding,'infrequent',infrq_shed)
+crawl_urls(1,1,shedding,'infrequent',infrq_shed)
 crawl_urls(1,1,shedding,'frequent',frq_shed)
-crawl_urls(1,4,shedding,'regularly',reg_shed)
-crawl_urls(1,11,shedding,'seasonal',seas_shed)
-crawl_urls(1,6,shedding,'occasional',occ_shed)
+crawl_urls(1,1,shedding,'regularly',reg_shed)
+crawl_urls(1,1,shedding,'seasonal',seas_shed)
+crawl_urls(1,1,shedding,'occasional',occ_shed)
 
 infrq_shedder = []
 frq_shedder = []
@@ -238,11 +231,11 @@ sz_medium = []
 sz_large = []
 sz_xlarge = []
 
-crawl_urls(1,3,size,'xsmall',sz_xsmall)
-crawl_urls(1,6,size,'small',sz_small)
-crawl_urls(1,10,size,'medium',sz_medium)
-crawl_urls(1,6,size,'large',sz_large)
-crawl_urls(1,3,size,'xlarge',sz_xlarge)
+crawl_urls(1,1,size,'xsmall',sz_xsmall)
+crawl_urls(1,1,size,'small',sz_small)
+crawl_urls(1,1,size,'medium',sz_medium)
+crawl_urls(1,1,size,'large',sz_large)
+crawl_urls(1,1,size,'xlarge',sz_xlarge)
 
 xs_dogs = []
 small_dogs = []
@@ -264,11 +257,11 @@ easy_training = []
 agreeable = []
 independent = []
 
-crawl_urls(1,3,trainability,'may-be-stubborn',may_be_stubborn)
-crawl_urls(1,6,trainability,'eager-to-please',eager_to_please)
-crawl_urls(1,5,trainability,'easy-training',easy_training)
-crawl_urls(1,8,trainability,'agreeable',agreeable)
-crawl_urls(1,7,trainability,'independent',independent)
+crawl_urls(1,1,trainability,'may-be-stubborn',may_be_stubborn)
+crawl_urls(1,1,trainability,'eager-to-please',eager_to_please)
+crawl_urls(1,1,trainability,'easy-training',easy_training)
+crawl_urls(1,1,trainability,'agreeable',agreeable)
+crawl_urls(1,1,trainability,'independent',independent)
 
 stubborn = []
 eager = []
@@ -285,7 +278,7 @@ scrape_breed_names(independent, indp)
 ###DOG_DICT###
 
 dog_dict = {}
-for y in range(len(breed_list)):
+for y in range(len(breed_list[0:15])):
     dog_dict[(breed_list[y])] = {}
     dog_dict[(breed_list[y])]['Group'] = group_list[y]
     if breed_list[y] in reg_ex_dogs:
@@ -336,25 +329,18 @@ for y in range(len(breed_list)):
         dog_dict[(breed_list[y])]['Shedding'] = 'Occasional'
     else:
         dog_dict[(breed_list[y])]['Shedding'] = 'Not Specified'
-    #dog_dict[(breed_list[y])]['Size'] = {}
     if breed_list[y] in xs_dogs:
         dog_dict[(breed_list[y])]['Size'] = 'XSmall'
-        #dog_dict[(breed_list[y])]['Size']['XSmall'] = 1
     elif breed_list[y] in small_dogs:
         dog_dict[(breed_list[y])]['Size'] = 'Small'
-        #dog_dict[(breed_list[y])]['Size']['Small'] = 2
     elif breed_list[y] in med_dogs:
         dog_dict[(breed_list[y])]['Size'] = 'Medium'
-        #dog_dict[(breed_list[y])]['Size']['Medium'] = 3
     elif breed_list[y] in large_dogs:
         dog_dict[(breed_list[y])]['Size'] = 'Large'
-        #dog_dict[(breed_list[y])]['Size']['Large'] = 4
     elif breed_list[y] in xl_dogs:
         dog_dict[(breed_list[y])]['Size'] = 'XLarge'
-        #dog_dict[(breed_list[y])]['Size']['XLarge'] = 5
     else:
         dog_dict[(breed_list[y])]['Size'] = 'Not Specified'
-        #dog_dict[(breed_list[y])]['Size']['Not Specified'] = 6
     if breed_list[y] in stubborn:
         dog_dict[(breed_list[y])]['Trainability'] = 'May Be Stubborn'
     elif breed_list[y] in eager:
@@ -368,8 +354,6 @@ for y in range(len(breed_list)):
     else:
         dog_dict[(breed_list[y])]['Trainability'] = 'Not Specified'
 
-
-
 ###CSV###
 
 with open('master_list.csv', 'w') as f:
@@ -378,7 +362,6 @@ with open('master_list.csv', 'w') as f:
         f.write("%s,%s,%s,%s,%s,%s,%s,%s\n"%(key, dog_dict[key]['Group'], dog_dict[key]['Activity Level'], dog_dict[key]['Barking Level'], dog_dict[key]['Coat Type'], dog_dict[key]['Shedding'], dog_dict[key]['Size'], dog_dict[key]['Trainability']))
 
 f.close()
-
 
 ###DATABASE###
 
@@ -969,7 +952,6 @@ def insert_train_data(pupdata):
 init_db(DBNAME)
 
 x = insert_dog_data()
-#print(x)
 insert_size_data(x)
 insert_group_data(x)
 insert_act_data(x)
@@ -978,16 +960,16 @@ insert_coat_data(x)
 insert_shed_data(x)
 insert_train_data(x)
 
-###FLASK APP###
+# ###FLASK APP###
 
 def fetch_data():
     conn = sqlite3.connect(DBNAME)
     cur = conn.cursor()
 
-    for row in cur.execute('SELECT * FROM Breeds WHERE Size_Id=5 ORDER BY BreedName'):
-        breed = row[0]
+    results = cur.execute('SELECT * FROM Breeds WHERE Size_Id=5 ORDER BY BreedName')
+    res_list = results.fetchall()
+    return res_list
     conn.close()
-    return breed
 
 app = Flask(__name__)
 
@@ -1011,9 +993,9 @@ def petitepups():
 def bigboys():
     rows = fetch_data()
     fetch_template = {
-    'breed':rows
+    'res_list':rows
     }
-    return render_template('bigboys.html', fetch_template)
+    return render_template('bigboys.html', **fetch_template)
 
 if __name__ == '__main__':
     print('starting Flask app', app.name)
