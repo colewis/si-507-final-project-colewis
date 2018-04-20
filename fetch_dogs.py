@@ -960,9 +960,9 @@ insert_coat_data(x)
 insert_shed_data(x)
 insert_train_data(x)
 
-# ###FLASK APP###
+###FLASK APP###
 
-def fetch_data():
+def fetch_xl_data():
     conn = sqlite3.connect(DBNAME)
     cur = conn.cursor()
 
@@ -970,6 +970,16 @@ def fetch_data():
     res_list = results.fetchall()
     return res_list
     conn.close()
+
+def fetch_xs_data():
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    results = cur.execute('SELECT * FROM Breeds WHERE Size_Id=1 ORDER BY BreedName')
+    res_list = results.fetchall()
+    return res_list
+    conn.close()
+
 
 app = Flask(__name__)
 
@@ -987,15 +997,25 @@ def contents():
 
 @app.route('/petitepups')
 def petitepups():
-    return render_template('petitepups.html')
+    rows = fetch_xs_data()
+    fetch_template = {
+    'res_list':rows
+    }
+    return render_template('petitepups.html', **fetch_template)
 
-@app.route('/bigboys')
+@app.route('/biggestboys')
 def bigboys():
-    rows = fetch_data()
+    rows = fetch_xl_data()
     fetch_template = {
     'res_list':rows
     }
     return render_template('bigboys.html', **fetch_template)
+
+@app.route('/mediummutts')
+def medmutts():
+    return render_template('mediummutts.html') #, **fetch_template)
+
+##link to table of contents on every page
 
 if __name__ == '__main__':
     print('starting Flask app', app.name)

@@ -1,4 +1,14 @@
-
 <link rel="stylesheet" href="/static/dogs.css">
-<p>pups</p>
-<a href='/'>Go home, good boy</a>
+
+<h1>PETITE PUPS</h1>
+<h1>a really tiny dog with a really big attitude</h1>
+
+
+<h1><img src="{{ url_for('static', filename='affenpinscher_puppy.jpg') }}" height=300 /></h1>
+{% for dog in res_list %}
+<tr>
+  <div align="center"><h1>{{dog[0]}}</h1></div>
+</tr>
+{% endfor %}
+<h1><img src="{{ url_for('static', filename='smoll_aff.jpg') }}" height=300 /></h1>
+<br/><br/><a href='/'>Go home, good boy</a>
