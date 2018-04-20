@@ -975,11 +975,37 @@ def fetch_xs_data():
     conn = sqlite3.connect(DBNAME)
     cur = conn.cursor()
 
-    results = cur.execute('SELECT * FROM Breeds WHERE Size_Id=1 ORDER BY BreedName')
+    results = cur.execute('SELECT * FROM Breeds WHERE Size_Id=1')
     res_list = results.fetchall()
     return res_list
     conn.close()
 
+def fetch_med_data():
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    results = cur.execute('SELECT * FROM Breeds WHERE Size_Id=3 LIMIT 1')
+    res_list = results.fetchall()
+    return res_list
+    conn.close()
+
+def fetch_sm_data():
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    results = cur.execute('SELECT * FROM Breeds WHERE Size_Id=2 LIMIT 1')
+    res_list = results.fetchall()
+    return res_list
+    conn.close()
+
+def fetch_lg_data():
+    conn = sqlite3.connect(DBNAME)
+    cur = conn.cursor()
+
+    results = cur.execute('SELECT * FROM Breeds WHERE Size_Id=4 LIMIT 1')
+    res_list = results.fetchall()
+    return res_list
+    conn.close()
 
 app = Flask(__name__)
 
@@ -995,7 +1021,7 @@ def about():
 def contents():
     return render_template('contents.html')
 
-@app.route('/petitepups')
+@app.route('/petitepup')
 def petitepups():
     rows = fetch_xs_data()
     fetch_template = {
@@ -1003,7 +1029,7 @@ def petitepups():
     }
     return render_template('petitepups.html', **fetch_template)
 
-@app.route('/biggestboys')
+@app.route('/biggestboy')
 def bigboys():
     rows = fetch_xl_data()
     fetch_template = {
@@ -1011,11 +1037,30 @@ def bigboys():
     }
     return render_template('bigboys.html', **fetch_template)
 
-@app.route('/mediummutts')
+@app.route('/mediummutt')
 def medmutts():
-    return render_template('mediummutts.html') #, **fetch_template)
+    rows = fetch_med_data()
+    fetch_template = {
+    'res_list':rows
+    }
+    return render_template('mediummutts.html', **fetch_template)
 
-##link to table of contents on every page
+@app.route('/smollboy')
+def smollboys():
+    rows = fetch_sm_data()
+    fetch_template = {
+    'res_list':rows
+    }
+    return render_template('smollboys.html', **fetch_template)
+
+@app.route('/largedoggo')
+def largedoggos():
+    rows = fetch_lg_data()
+    fetch_template = {
+    'res_list':rows
+    }
+    return render_template('largedoggos.html', **fetch_template)
+
 
 if __name__ == '__main__':
     print('starting Flask app', app.name)

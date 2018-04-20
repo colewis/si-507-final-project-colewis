@@ -1,0 +1,21 @@
+<link rel="stylesheet" href="/static/dogs.css">
+
+<h1>ONE LARGE FRIEND</h1>
+<h1>more fluffin' for the lovin'</h1>
+<div align="left"><a href='/mediummutt'>Previous tour stop</a></div>
+<div align="right"><a href='/biggestboy'>Next tour stop</a><br/><br/></div>
+
+<h1><img src="{{ url_for('static', filename='afghan.gif') }}" height=300 /></h1>
+{% for dog in res_list %}
+<tr>
+  <div align="center"><h1>{{dog[0]}}</h1></div>
+</tr>
+{% endfor %}
+<h1><img src="{{ url_for('static', filename='afghan.jpg') }}" height=300 /></h1>
+
+<br/><br/><a href='/contents'>Return to the Table of Dogtents</a>
+<br/><br/><a href='/'>Go home, good boy</a>
+<!-- rows = fetch_data()
+fetch_template = {
+'breed':rows
+} -->

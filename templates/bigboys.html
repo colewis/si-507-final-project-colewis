@@ -1,7 +1,9 @@
 <link rel="stylesheet" href="/static/dogs.css">
 
-<h1>THE BIGGEST BOYS</h1>
-<h1>dogs who think they're puppies but they're actually HUGE</h1>
+<h1>THE BIGGEST BOY</h1>
+<h1>the dog who thinks they're a puppy but they're actually HUGE</h1>
+<div align="left"><a href='/largedoggo'>Previous tour stop</a></div>
+<div align="right"><a href='/petitepup'>Start tour over</a><br/><br/></div>
 
 <h1><img src="{{ url_for('static', filename='akita.gif') }}" height=300 /></h1>
 {% for dog in res_list %}
@@ -9,7 +11,7 @@
   <div align="center"><h1>{{dog[0]}}</h1></div>
 </tr>
 {% endfor %}
-<h1><img src="{{ url_for('static', filename='anatolian_goat.jpg') }}" height=300 /></h1>
+<h1><img src="{{ url_for('static', filename='akita_and_baby.jpg') }}" height=300 /></h1>
 
-
+<br/><br/><a href='/contents'>Return to the Table of Dogtents</a>
 <br/><br/><a href='/'>Go home, good boy</a>
